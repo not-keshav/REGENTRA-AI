@@ -1,0 +1,144 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control for institutional and governmental officers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["INSTITUTION_ADMIN", "SCRUTINY_OFFICER", "SENIOR_OFFICER", "COMPLIANCE_ADMIN", "SUPER_ADMIN"] },
+        "institutionId": { "type": "string" },
+        "department": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "email", "name", "role", "active"]
+    },
+    "Institution": {
+      "title": "Institution",
+      "description": "Technical institution profile registered with AICTE",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "institutionId": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "state": { "type": "string" },
+        "district": { "type": "string" },
+        "address": { "type": "string" },
+        "contactPerson": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "affiliationUniversity": { "type": "string" },
+        "complianceScore": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "institutionId", "name", "state", "status"]
+    },
+    "Application": {
+      "title": "Application",
+      "description": "AICTE Approval Application submitted by an institution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "institutionId": { "type": "string" },
+        "institutionName": { "type": "string" },
+        "category": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "intakeCapacity": { "type": "number" },
+        "status": { "type": "string" },
+        "currentStageId": { "type": "string" },
+        "currentStageName": { "type": "string" },
+        "assignedOfficerId": { "type": "string" },
+        "riskScore": { "type": "number" },
+        "riskCategory": { "type": "string" },
+        "submittedAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "deadlineDate": { "type": "string" },
+        "pendingDays": { "type": "number" },
+        "declarationAccepted": { "type": "boolean" }
+      },
+      "required": ["id", "applicationId", "institutionId", "category", "status", "currentStageId"]
+    },
+    "DocumentRecord": {
+      "title": "DocumentRecord",
+      "description": "Uploaded institutional document with OCR extracted metadata and AI analysis",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "category": { "type": "string" },
+        "name": { "type": "string" },
+        "fileName": { "type": "string" },
+        "uploadDate": { "type": "string" },
+        "status": { "type": "string" },
+        "ocrExtractedText": { "type": "string" },
+        "aiSummary": { "type": "string" },
+        "confidenceScore": { "type": "number" },
+        "officerVerified": { "type": "boolean" }
+      },
+      "required": ["id", "applicationId", "category", "fileName", "status"]
+    },
+    "ComplianceRule": {
+      "title": "ComplianceRule",
+      "description": "Regulatory rule configured according to AICTE Approval Process Handbook",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ruleId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "applicableCategory": { "type": "string" },
+        "severity": { "type": "string" },
+        "version": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "ruleId", "name", "severity", "active"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Tamper-evident audit trail record of system transactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userRole": { "type": "string" },
+        "action": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "remarks": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Registered platform accounts and administrative roles"
+    },
+    "/institutions/{institutionId}": {
+      "schema": "Institution",
+      "description": "Technical institutions directory"
+    },
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Institutional approval applications and tracking states"
+    },
+    "/documents/{documentId}": {
+      "schema": "DocumentRecord",
+      "description": "Uploaded institutional certificates, OCR text and verification statuses"
+    },
+    "/complianceRules/{ruleId}": {
+      "schema": "ComplianceRule",
+      "description": "Configurable regulatory compliance rules"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Immutable statutory transaction and audit logs"
+    }
+  }
+}

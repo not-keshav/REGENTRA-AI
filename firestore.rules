@@ -1,0 +1,119 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Security Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // System Administrators & Senior Clearance Gate
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'superadmin@regentra.aicte.gov.in' ||
+        request.auth.token.email == 'keshavparashar834@gmail.com'
+      );
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isUser(userId) || isSuperAdmin());
+      allow list: if isSuperAdmin();
+      allow create, update: if isSignedIn() && (isUser(userId) || isSuperAdmin());
+      allow delete: if isSuperAdmin();
+    }
+
+    // INSTITUTIONS COLLECTION
+    match /institutions/{institutionId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // APPLICATIONS COLLECTION
+    match /applications/{applicationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSuperAdmin();
+    }
+
+    // DOCUMENTS COLLECTION
+    match /documents/{documentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSuperAdmin();
+    }
+
+    // COMPLIANCE RULES
+    match /complianceRules/{ruleId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // WORKFLOW STAGES
+    match /workflowStages/{stageId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // OFFICER ASSIGNMENTS
+    match /officerAssignments/{officerId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // RISK ASSESSMENTS
+    match /riskAssessments/{riskId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // SIMULATION RESULTS
+    match /simulationResults/{simId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // NOTIFICATIONS
+    match /notifications/{notifId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isSuperAdmin();
+    }
+
+    // AUDIT LOGS (Immutable: create only, no client updates or deletes)
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false; // Immutable audit trail
+    }
+
+    // SYSTEM SETTINGS
+    match /systemSettings/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+  }
+}

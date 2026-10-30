@@ -1,0 +1,6 @@
+{
+  "name": "REGENTRA AI - AICTE Approval Workflow Automation",
+  "description": "Integrated AICTE Approval Workflow Automation, Compliance Monitoring, and Alert Management System (SIH 2026 - Problem Statement SIH 26262).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
